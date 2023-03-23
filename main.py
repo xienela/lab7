@@ -268,3 +268,66 @@ def getFeatures(self, state, action):
 
         return features
 
+def getFeatures(self, state, action):
+        food = state.getFood()
+        capsules = state.getCapsules()
+        walls = state.getWalls()
+        ghosts = state.getGhostPositions()
+
+        features = util.Counter()
+        features["bias"] = 1.0
+
+        x, y = state.getPacmanPosition()
+        dx, dy = Actions.directionToVector(action)
+        next_x, next_y = int(x + dx), int(y + dy)
+
+        scared_ghosts = [
+            ghost for ghost in state.getGhostStates() if ghost.scaredTimer > 0
+        ]
+        non_scared_ghosts = [
+            ghost for ghost in state.getGhostStates() if ghost.scaredTimer == 0
+        ]
+
+        # Feature: distance to the closest non-scared ghost
+        non_scared_ghost_distances = [
+            util.manhattanDistance((next_x, next_y), ghost.getPosition())
+            for ghost in non_scared_ghosts
+        ]
+        if non_scared_ghost_distances:
+            features["closest-non-scared-ghost"] = min(
+                non_scared_ghost_distances
+            ) / (walls.width * walls.height)
+
+        # Feature: distance to the closest scared ghost
+        scared_ghost_distances = [
+            util.manhattanDistance((next_x, next_y), ghost.getPosition())
+            for ghost in scared_ghosts
+        ]
+        if scared_ghost_distances:
+            features["closest-scared-ghost"] = min(
+                scared_ghost_distances
+            ) / (walls.width * walls.height)
+
+        # Feature: check if Pacman will eat food
+        if food[next_x][next_y]:
+            features["eats-food"] = 1.0
+
+        # Feature: distance to the closest food
+        dist = closestFood((next_x, next_y), food, walls)
+        if dist is not None:
+            features["closest-food"] = float(dist) / (walls.width * walls.height)
+
+        # Feature: check if Pacman will eat a capsule
+        if (next_x, next_y) in capsules:
+            features["eats-capsule"] = 1.0
+
+        # Feature: count the number of remaining food
+        features["remaining-food"] = float(food.count()) / (walls.width * walls.height)
+
+        # Feature: count the number of remaining capsules
+        features["remaining-capsules"] = float(len(capsules)) / (walls.width * walls.height)
+
+        # Normalize the features
+        features.divideAll(10.0)
+
+        return features
