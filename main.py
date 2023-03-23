@@ -173,3 +173,18 @@ Traceback (most recent call last):
   File "/usr/lib/python2.7/random.py", line 277, in choice
     return seq[int(self.random() * len(seq))]  # raises IndexError if seq is empty
 IndexError: list index out of range
+  
+  
+  
+Traceback (most recent call last):
+  File "pacman.py", line 680, in <module>
+    runGames( **args )
+  File "pacman.py", line 646, in runGames
+    game.run()
+  File "/home/vboxuser/pacman-main/game.py", line 700, in run
+    self.state = self.state.generateSuccessor( agentIndex, action )
+  File "pacman.py", line 107, in generateSuccessor
+    PacmanRules.applyAction( state, action )
+  File "pacman.py", line 343, in applyAction
+    raise Exception("Illegal action " + str(action))
+Exception: Illegal action None
