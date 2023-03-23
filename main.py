@@ -92,3 +92,57 @@ def callback_func(query):
     if value == "Ошибка!": value = ""
 
 bot.polling(none_stop=False, interval=0)
+
+
+
+
+class BetterExtractor(FeatureExtractor):
+    def getFeatures(self, state, action):
+        # Extract the grid of food and walls, and the Pacman position
+        food = state.getFood()
+        walls = state.getWalls()
+        x, y = state.getPacmanPosition()
+
+        features = util.Counter()
+
+        features["bias"] = 1.0
+
+        # Compute the distance to the nearest food
+        min_food_distance = float("inf")
+        for food_x, food_y in food.asList():
+            distance = util.manhattanDistance((x, y), (food_x, food_y))
+            if distance < min_food_distance:
+                min_food_distance = distance
+        features["closest-food"] = min_food_distance
+
+        # Check if action leads to a wall
+        dx, dy = Actions.directionToVector(action)
+        next_x, next_y = int(x + dx), int(y + dy)
+        if walls[next_x][next_y]:
+            features["hit-wall"] = 1
+        else:
+            features["hit-wall"] = 0
+
+        # Check if action leads to a ghost
+        ghost_states = state.getGhostStates()
+        ghost_positions = [ghost_state.getPosition() for ghost_state in ghost_states]
+        ghost_distances = [util.manhattanDistance((x, y), ghost_position) for ghost_position in ghost_positions]
+        if min(ghost_distances) <= 1:
+            features["near-ghost"] = 1
+        else:
+            features["near-ghost"] = 0
+
+        # Compute the distance to the nearest power pellet
+        power_pellets = state.getCapsules()
+        if power_pellets:
+            min_power_pellet_distance = min([util.manhattanDistance((x, y), pellet) for pellet in power_pellets])
+            features["closest-power-pellet"] = min_power_pellet_distance
+        else:
+            features["closest-power-pellet"] = 0
+
+        # Encourage the Pacman to eat power pellets when ghosts are nearby
+        features["eat-power-pellet"] = 0
+        if features["near-ghost"] and power_pellets:
+            features["eat-power-pellet"] = 1
+
+        return features
