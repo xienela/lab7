@@ -33,40 +33,23 @@ class SimpleExtractor(FeatureExtractor):
         if scared_ghost_distances:
             features["closest-scared-ghost"] = float(min(scared_ghost_distances)) / (walls.width * walls.height)
 
+        # Calculate the distance to the nearest capsule
+        capsules = state.getCapsules()
+        capsule_distances = [manhattanDistance((next_x, next_y), capsule) for capsule in capsules]
+        if capsule_distances:
+            features["closest-capsule"] = float(min(capsule_distances)) / (walls.width * walls.height)
+
+        # Calculate the distance to the nearest dead end
+        dead_end_distances = []
+        for i in range(walls.width):
+            for j in range(walls.height):
+                if walls[i][j] == False:
+                    neighbors = [(i + dx, j + dy) for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]]
+                    walls_count = sum(1 for nx, ny in neighbors if walls[nx][ny])
+                    if walls_count == 3:
+                        dead_end_distances.append(manhattanDistance((next_x, next_y), (i, j)))
+        if dead_end_distances:
+            features["closest-dead-end"] = float(min(dead_end_distances)) / (walls.width * walls.height)
+
         features.divideAll(10.0)
         return features
-    
-    
-    
-Beginning 90 episodes of Training
-Training Done (turning off epsilon and alpha)
----------------------------------------------
-Pacman died! Score: -109
-Pacman emerges victorious! Score: 357
-Pacman died! Score: -258
-Pacman died! Score: -461
-Pacman died! Score: -171
-Pacman died! Score: -241
-Pacman died! Score: -280
-Pacman died! Score: -445
-Pacman died! Score: -419
-Pacman died! Score: -501
-Reinforcement Learning Status:
-        Completed 10 test episodes
-        Average Rewards over testing: -252.80
-        Average Rewards for last 100 episodes: -305.33
-        Episode took 131.58 seconds
-Pacman died! Score: -47
-Pacman died! Score: -537
-Pacman died! Score: -561
-Pacman died! Score: -373
-Pacman died! Score: -462
-Pacman died! Score: -503
-Pacman died! Score: -448
-Pacman died! Score: -300
-Pacman died! Score: -427
-Pacman died! Score: -80
-Average Score: -313.3
-Scores:        -109.0, 357.0, -258.0, -461.0, -171.0, -241.0, -280.0, -445.0, -419.0, -501.0, -47.0, -537.0, -561.0, -373.0, -462.0, -503.0, -448.0, -300.0, -427.0, -80.0
-Win Rate:      1/20 (0.05)
-Record:        Loss, Win, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss
