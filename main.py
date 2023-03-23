@@ -188,3 +188,35 @@ Traceback (most recent call last):
   File "pacman.py", line 343, in applyAction
     raise Exception("Illegal action " + str(action))
 Exception: Illegal action None
+  
+  
+def computeActionFromQValues(self, state):
+    """
+      Compute the best action to take in a state.  Note that if there
+      are no legal actions, which is the case at the terminal state,
+      you should return None.
+    """
+    # Get the list of legal actions
+    legal_actions = self.getLegalActions(state)
+    
+    # If there are no legal actions, return None
+    if not legal_actions:
+        return None
+
+    max_q_value = float('-inf')
+    max_actions = []
+
+    for action in legal_actions:
+        q_value = self.getQValue(state, action)
+        if q_value > max_q_value:
+            max_q_value = q_value
+            max_actions = [action]
+        elif q_value == max_q_value:
+            max_actions.append(action)
+
+    # Return a random action among the actions with the maximum Q-value
+    if max_actions:
+        return random.choice(max_actions)
+    else:
+        return legal_actions[0]  # If max_actions is empty, return the first legal action
+
