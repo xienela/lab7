@@ -96,53 +96,64 @@ bot.polling(none_stop=False, interval=0)
 
 
 
-class BetterExtractor(FeatureExtractor):
-    def getFeatures(self, state, action):
-        # Extract the grid of food and walls, and the Pacman position
-        food = state.getFood()
-        walls = state.getWalls()
-        x, y = state.getPacmanPosition()
+def getFeatures(self, state, action):
+    # Extract the grid of food and walls and the pacman position
+    food = state.getFood()
+    walls = state.getWalls()
+    pacmanPosition = state.getPacmanPosition()
+    nextPacmanPosition = Actions.getSuccessor(pacmanPosition, action)
 
-        features = util.Counter()
+    features = util.Counter()
 
-        features["bias"] = 1.0
+    # Feature 1: Bias term
+    features["bias"] = 1.0
 
-        # Compute the distance to the nearest food
-        min_food_distance = float("inf")
-        for food_x, food_y in food.asList():
-            distance = util.manhattanDistance((x, y), (food_x, food_y))
-            if distance < min_food_distance:
-                min_food_distance = distance
-        features["closest-food"] = min_food_distance
+    # Feature 2: Distance to the closest food
+    min_food_distance = float("inf")
+    for food_position in food.asList():
+        distance = util.manhattanDistance(nextPacmanPosition, food_position)
+        min_food_distance = min(min_food_distance, distance)
+    features["closest-food"] = 1.0 / (min_food_distance + 1)
 
-        # Check if action leads to a wall
-        dx, dy = Actions.directionToVector(action)
-        next_x, next_y = int(x + dx), int(y + dy)
-        if walls[next_x][next_y]:
-            features["hit-wall"] = 1
+    # Feature 3: Number of food remaining
+    remaining_food = len(food.asList())
+    features["remaining-food"] = 1.0 / (remaining_food + 1)
+
+    # Feature 4: Distance to the closest ghost and scared ghost
+    min_ghost_distance = float("inf")
+    min_scared_ghost_distance = float("inf")
+    for ghost_state in state.getGhostStates():
+        distance = util.manhattanDistance(nextPacmanPosition, ghost_state.getPosition())
+        if ghost_state.scaredTimer > 0:
+            min_scared_ghost_distance = min(min_scared_ghost_distance, distance)
         else:
-            features["hit-wall"] = 0
+            min_ghost_distance = min(min_ghost_distance, distance)
 
-        # Check if action leads to a ghost
-        ghost_states = state.getGhostStates()
-        ghost_positions = [ghost_state.getPosition() for ghost_state in ghost_states]
-        ghost_distances = [util.manhattanDistance((x, y), ghost_position) for ghost_position in ghost_positions]
-        if min(ghost_distances) <= 1:
-            features["near-ghost"] = 1
-        else:
-            features["near-ghost"] = 0
+    if min_ghost_distance < 2:
+        features["closest-ghost"] = -100
+    else:
+        features["closest-ghost"] = 0
 
-        # Compute the distance to the nearest power pellet
-        power_pellets = state.getCapsules()
-        if power_pellets:
-            min_power_pellet_distance = min([util.manhattanDistance((x, y), pellet) for pellet in power_pellets])
-            features["closest-power-pellet"] = min_power_pellet_distance
-        else:
-            features["closest-power-pellet"] = 0
+    if min_scared_ghost_distance != float("inf"):
+        features["scared-ghost"] = 1.0 / (min_scared_ghost_distance + 1)
+    else:
+        features["scared-ghost"] = 0
 
-        # Encourage the Pacman to eat power pellets when ghosts are nearby
-        features["eat-power-pellet"] = 0
-        if features["near-ghost"] and power_pellets:
-            features["eat-power-pellet"] = 1
+    # Feature 5: Number of capsules remaining
+    capsules = len(state.getCapsules())
+    features["remaining-capsules"] = 1.0 / (capsules + 1)
 
-        return features
+    # Feature 6: Distance to the closest capsule
+    min_capsule_distance = float("inf")
+    for capsule_position in state.getCapsules():
+        distance = util.manhattanDistance(nextPacmanPosition, capsule_position)
+        min_capsule_distance = min(min_capsule_distance, distance)
+    features["closest-capsule"] = 1.0 / (min_capsule_distance + 1)
+
+    # Feature 7: Stopped
+    features["stopped"] = 0
+    if action == Directions.STOP:
+        features["stopped"] = 1
+
+    return features
+
