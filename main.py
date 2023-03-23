@@ -78,5 +78,22 @@ def getFeatures(self, state, action):
         return features
 
 
-
+Traceback (most recent call last):
+  File "pacman.py", line 680, in <module>
+    runGames( **args )
+  File "pacman.py", line 646, in runGames
+    game.run()
+  File "/home/vboxuser/pacman-main/game.py", line 637, in run
+    observation = agent.observationFunction(self.state.deepCopy())
+  File "/home/vboxuser/pacman-main/learningAgents.py", line 213, in observationFunction
+    self.observeTransition(self.lastState, self.lastAction, state, reward)
+  File "/home/vboxuser/pacman-main/learningAgents.py", line 133, in observeTransition
+    self.update(state,action,nextState,deltaReward)
+  File "/home/vboxuser/pacman-main/qlearningAgents.py", line 211, in update
+    qValueForState = self.getQValue(state,action)
+  File "/home/vboxuser/pacman-main/qlearningAgents.py", line 199, in getQValue
+    features = self.featExtractor.getFeatures(state,action)
+  File "/home/vboxuser/pacman-main/featureExtractors.py", line 125, in getFeatures
+    closest_scared_ghost_index = scared_ghost_distances.index(min(scared_ghost_distances))
+ValueError: min() arg is an empty sequence
 
