@@ -157,3 +157,19 @@ def getFeatures(self, state, action):
 
     return features
 
+Traceback (most recent call last):
+  File "pacman.py", line 680, in <module>
+    runGames( **args )
+  File "pacman.py", line 646, in runGames
+    game.run()
+  File "/home/vboxuser/pacman-main/game.py", line 686, in run
+    action = agent.getAction(observation)
+  File "/home/vboxuser/pacman-main/qlearningAgents.py", line 159, in getAction
+    action = QLearningAgent.getAction(self,state)
+  File "/home/vboxuser/pacman-main/qlearningAgents.py", line 108, in getAction
+    return self.computeActionFromQValues(state) 
+  File "/home/vboxuser/pacman-main/qlearningAgents.py", line 89, in computeActionFromQValues
+    return random.choice(maxActions)
+  File "/usr/lib/python2.7/random.py", line 277, in choice
+    return seq[int(self.random() * len(seq))]  # raises IndexError if seq is empty
+IndexError: list index out of range
