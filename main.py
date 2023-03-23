@@ -97,3 +97,35 @@ Traceback (most recent call last):
     closest_scared_ghost_index = scared_ghost_distances.index(min(scared_ghost_distances))
 ValueError: min() arg is an empty sequence
 
+Beginning 90 episodes of Training
+Training Done (turning off epsilon and alpha)
+---------------------------------------------
+Pacman died! Score: -522
+Pacman died! Score: -538
+Pacman died! Score: -523
+Pacman died! Score: -542
+Pacman died! Score: -513
+Pacman died! Score: -537
+Pacman died! Score: -527
+Pacman died! Score: -550
+Pacman died! Score: -645
+Pacman died! Score: -579
+Reinforcement Learning Status:
+        Completed 10 test episodes
+        Average Rewards over testing: -547.60
+        Average Rewards for last 100 episodes: -539.56
+        Episode took 19.70 seconds
+Pacman died! Score: -628
+Pacman died! Score: -615
+Pacman died! Score: -592
+Pacman died! Score: -548
+Pacman died! Score: -543
+Pacman died! Score: -525
+Pacman died! Score: -589
+Pacman died! Score: -612
+Pacman died! Score: -533
+Pacman died! Score: -595
+Average Score: -562.8
+Scores:        -522.0, -538.0, -523.0, -542.0, -513.0, -537.0, -527.0, -550.0, -645.0, -579.0, -628.0, -615.0, -592.0, -548.0, -543.0, -525.0, -589.0, -612.0, -533.0, -595.0
+Win Rate:      0/20 (0.00)
+Record:        Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss, Loss
