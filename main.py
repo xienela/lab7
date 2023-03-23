@@ -76,3 +76,7 @@ def getFeatures(self, state, action):
         features.divideAll(10.0)
 
         return features
+
+
+
+
